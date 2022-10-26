@@ -191,7 +191,7 @@ func updateStakingModule(appGenState map[string]json.RawMessage) error {
 		return err
 	}
 
-	stakingGenState.Params.BondDenom = "aevmos"
+	stakingGenState.Params.BondDenom = StakeDenom
 
 	bz, err := util.Cdc.MarshalJSON(&stakingGenState)
 	if err != nil {
@@ -207,7 +207,7 @@ func updateCrisisModule(appGenState map[string]json.RawMessage) error {
 		return err
 	}
 
-	crisisGenState.ConstantFee.Denom = "aevmos"
+	crisisGenState.ConstantFee.Denom = StakeDenom
 
 	bz, err := util.Cdc.MarshalJSON(&crisisGenState)
 	if err != nil {
@@ -223,7 +223,7 @@ func updateEvmModule(appGenState map[string]json.RawMessage) error {
 		return err
 	}
 
-	evmGenState.Params.EvmDenom = "aevmos"
+	evmGenState.Params.EvmDenom = StakeDenom
 
 	bz, err := util.Cdc.MarshalJSON(&evmGenState)
 	if err != nil {
@@ -239,7 +239,7 @@ func updateInflationModule(appGenState map[string]json.RawMessage) error {
 		return err
 	}
 
-	inflationGenState.Params.MintDenom = "aevmos"
+	inflationGenState.Params.MintDenom = StakeDenom
 
 	bz, err := util.Cdc.MarshalJSON(&inflationGenState)
 	if err != nil {
@@ -297,17 +297,20 @@ func updateClaimsModule(appGenState map[string]json.RawMessage) error {
 	}
 
 	claimsGenState.ClaimsRecords = append(claimsGenState.ClaimsRecords,
-		claimstypes.ClaimsRecordAddress{Address: "evmos13cf9npvns2vhh3097909mkhfxngmw6d6eppfm4",
+		claimstypes.ClaimsRecordAddress{
+			Address:                "evmos13cf9npvns2vhh3097909mkhfxngmw6d6eppfm4",
 			InitialClaimableAmount: sdk.NewInt(0),
 			ActionsCompleted:       []bool{false, false, false, true},
 		})
 	claimsGenState.ClaimsRecords = append(claimsGenState.ClaimsRecords,
-		claimstypes.ClaimsRecordAddress{Address: "evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw34",
+		claimstypes.ClaimsRecordAddress{
+			Address:                "evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw34",
 			InitialClaimableAmount: sdk.NewInt(0),
 			ActionsCompleted:       []bool{true, true, false, true},
 		})
 	claimsGenState.ClaimsRecords = append(claimsGenState.ClaimsRecords,
-		claimstypes.ClaimsRecordAddress{Address: "evmos1x8eupnk7hhnnm5m824qt53203w0m6x7tkr5l9u",
+		claimstypes.ClaimsRecordAddress{
+			Address:                "evmos1x8eupnk7hhnnm5m824qt53203w0m6x7tkr5l9u",
 			InitialClaimableAmount: sdk.NewInt(0),
 			ActionsCompleted:       []bool{false, true, false, false},
 		})
