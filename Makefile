@@ -22,6 +22,10 @@ DOCKER_IMAGE := $(NAMESPACE)/$(PROJECT)
 COMMIT_HASH := $(shell git rev-parse --short=7 HEAD)
 DOCKER_TAG := $(COMMIT_HASH)
 
+# e2e env
+PRE_UPGRADE_VERSION := $(shell git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+POST_UPGRADE_VERSION := $(shell git describe --tags --abbrev=0)
+
 export GO111MODULE = on
 
 # Default target executed when no arguments are given to make.
@@ -169,6 +173,21 @@ clean:
 all: build
 
 build-all: tools build lint test
+
+
+build-e2e-chain-init:
+	mkdir -p $(BUILDDIR)
+	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./tests/e2e/chain_init
+
+docker-build-debug:
+	@docker build -t evmos:debug --build-arg BASE_IMG_TAG=debug -f Dockerfile .
+
+docker-build-e2e-chain-init:
+	@docker build \
+	-t evmos-e2e-chain-init:debug \
+	--build-arg PRE_UPGRADE_VERSION=$(PRE_UPGRADE_VERSION) \
+	-f tests/e2e/chain_init/Dockerfile .
+
 
 .PHONY: distclean clean build-all
 
@@ -320,16 +339,20 @@ build-docs-versioned:
 ###                           Tests & Simulation                            ###
 ###############################################################################
 
+
 test: test-unit
 test-all: test-unit test-race
-PACKAGES_UNIT=$(shell go list ./...)
+PACKAGES_UNIT=$(shell go list ./...  | grep -v /tests/)
 TEST_PACKAGES=./...
-TEST_TARGETS := test-unit test-unit-cover test-race
+TEST_TARGETS := test-unit test-unit-cover test-race test-e2e
 
 # Test runs-specific rules. To add a new test target, just add
 # a new rule, customise ARGS or TEST_PACKAGES ad libitum, and
 # append the new rule to the TEST_TARGETS list.
 test-unit: ARGS=-timeout=10m -race
+test-unit: TEST_PACKAGES=$(PACKAGES_UNIT)
+
+
 test-unit: TEST_PACKAGES=$(PACKAGES_UNIT)
 
 test-race: ARGS=-race
@@ -338,6 +361,12 @@ $(TEST_TARGETS): run-tests
 
 test-unit-cover: ARGS=-timeout=10m -race -coverprofile=coverage.txt -covermode=atomic
 test-unit-cover: TEST_PACKAGES=$(PACKAGES_UNIT)
+
+
+test-e2e:
+	export PRE_UPGRADE_VERSION=$(PRE_UPGRADE_VERSION)
+	export POST_UPGRADE_VERSION=$(POST_UPGRADE_VERSION)
+	TEST_PACKAGES=$(shell go list ./... | grep /tests/)
 
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
