@@ -24,7 +24,7 @@ DOCKER_TAG := $(COMMIT_HASH)
 
 # e2e env
 PRE_UPGRADE_VERSION := $(shell git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
-POST_UPGRADE_VERSION := $(shell git describe --tags)
+POST_UPGRADE_VERSION := $(shell git describe --tags --abbrev=0)
 
 export GO111MODULE = on
 
@@ -363,7 +363,9 @@ test-unit-cover: ARGS=-timeout=10m -race -coverprofile=coverage.txt -covermode=a
 test-unit-cover: TEST_PACKAGES=$(PACKAGES_UNIT)
 
 
-test-e2e: docker-build-e2e-chain-init docker-build-debug
+test-e2e:
+	export PRE_UPGRADE_VERSION=$(PRE_UPGRADE_VERSION)
+	export POST_UPGRADE_VERSION=$(POST_UPGRADE_VERSION)
 	TEST_PACKAGES=$(shell go list ./... | grep /tests/)
 
 run-tests:
