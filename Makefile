@@ -364,9 +364,7 @@ test-unit-cover: TEST_PACKAGES=$(PACKAGES_UNIT)
 
 
 test-e2e:
-	export PRE_UPGRADE_VERSION=$(PRE_UPGRADE_VERSION)
-	export POST_UPGRADE_VERSION=$(POST_UPGRADE_VERSION)
-	TEST_PACKAGES=$(shell go list ./... | grep /tests/)
+	PRE_UPGRADE_VERSION=$(PRE_UPGRADE_VERSION) POST_UPGRADE_VERSION=$(POST_UPGRADE_VERSION) go test ./tests/e2e
 
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
