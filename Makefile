@@ -22,6 +22,10 @@ DOCKER_IMAGE := $(NAMESPACE)/$(PROJECT)
 COMMIT_HASH := $(shell git rev-parse --short=7 HEAD)
 DOCKER_TAG := $(COMMIT_HASH)
 
+# e2e env
+PRE_UPGRADE_VERSION := $(shell git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+POST_UPGRADE_VERSION := $(shell git describe --tags)
+
 export GO111MODULE = on
 
 # Default target executed when no arguments are given to make.
@@ -179,7 +183,10 @@ docker-build-debug:
 	@docker build -t evmos:debug --build-arg BASE_IMG_TAG=debug -f Dockerfile .
 
 docker-build-e2e-chain-init:
-	@docker build -t evmos-e2e-chain-init:debug -f tests/e2e/chain_init/Dockerfile .
+	@docker build \
+	-t evmos-e2e-chain-init:debug \
+	--build-arg PRE_UPGRADE_VERSION=$(PRE_UPGRADE_VERSION) \
+	-f tests/e2e/chain_init/Dockerfile .
 
 
 .PHONY: distclean clean build-all
@@ -356,7 +363,8 @@ test-unit-cover: ARGS=-timeout=10m -race -coverprofile=coverage.txt -covermode=a
 test-unit-cover: TEST_PACKAGES=$(PACKAGES_UNIT)
 
 
-test-e2e: TEST_PACKAGES=$(shell go list ./... | grep /tests/)
+test-e2e: docker-build-e2e-chain-init docker-build-debug
+	TEST_PACKAGES=$(shell go list ./... | grep /tests/)
 
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))

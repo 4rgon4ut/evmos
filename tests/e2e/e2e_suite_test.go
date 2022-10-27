@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -65,7 +66,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.configureDockerResources(chain.ChainAID, chain.ChainBID)
 
 	s.configureChain(chain.ChainAID)
-	s.runValidators(s.chains[0], 0)
+	v := os.Getenv("PRE_UPGRADE_VERSION")
+	if v == "" {
+		log.Fatal("no pre-upgrade version specified")
+	}
+	s.T().Logf("running validators with version %s...", v)
+	s.runValidators(s.chains[0], 0, v)
 }
 
 func (s *IntegrationTestSuite) configureDockerResources(chainIDOne, chainIDTwo string) {
@@ -108,7 +114,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *IntegrationTestSuite) runValidators(c *chain.Chain, portOffset int) {
+func (s *IntegrationTestSuite) runValidators(c *chain.Chain, portOffset int, preUpgradeVersion string) {
 	s.T().Logf("starting Evmos %s validator containers...", c.ChainMeta.ID)
 	s.valResources[c.ChainMeta.ID] = make([]*dockertest.Resource, len(c.Validators))
 	for i, val := range c.Validators {
@@ -119,7 +125,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain.Chain, portOffset int) {
 				fmt.Sprintf("%s/:/evmos/.evmosd", val.ConfigDir),
 			},
 			Repository: "tharsishq/evmos",
-			Tag:        "v8.2.3",
+			Tag:        preUpgradeVersion,
 			Cmd: []string{
 				"/usr/bin/evmosd",
 				"start",
@@ -242,7 +248,11 @@ func noRestart(config *docker.HostConfig) {
 
 func (s *IntegrationTestSuite) initUpgrade() {
 	// submit, deposit, and vote for upgrade proposal
-	s.submitProposal(s.chains[0])
+	v := os.Getenv("POST_UPGRADE_VERSION")
+	if v == "" {
+		log.Fatal("no post-upgrade version specified")
+	}
+	s.submitProposal(s.chains[0], v)
 	s.depositProposal(s.chains[0])
 	s.voteProposal(s.chains[0])
 	s.fundCommunityPool(s.chains[0])

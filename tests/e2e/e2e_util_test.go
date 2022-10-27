@@ -111,7 +111,7 @@ func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string,
 	s.T().Log("successfully sent IBC tokens")
 }
 
-func (s *IntegrationTestSuite) submitProposal(c *chain.Chain) {
+func (s *IntegrationTestSuite) submitProposal(c *chain.Chain, upgradeVersion string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -127,7 +127,7 @@ func (s *IntegrationTestSuite) submitProposal(c *chain.Chain) {
 			"--home",
 			"/evmos/.evmosd",
 			"tx", "gov", "submit-proposal",
-			"software-upgrade", "v9.0.0",
+			"software-upgrade", upgradeVersion,
 			"--title=\"v9.0.0\"",
 			"--description=\"v9 upgrade proposal\"",
 			"--upgrade-height=75",
