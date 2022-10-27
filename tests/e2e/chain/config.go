@@ -22,9 +22,9 @@ import (
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
-	"github.com/evmos/evmos/v8/tests/e2e/util"
-	claimstypes "github.com/evmos/evmos/v8/x/claims/types"
-	inflationtypes "github.com/evmos/evmos/v8/x/inflation/types"
+	"github.com/evmos/evmos/v9/tests/e2e/util"
+	claimstypes "github.com/evmos/evmos/v9/x/claims/types"
+	inflationtypes "github.com/evmos/evmos/v9/x/inflation/types"
 )
 
 type ValidatorConfig struct {

@@ -11,7 +11,7 @@ import (
 
 	"github.com/evmos/ethermint/crypto/ethsecp256k1"
 	"github.com/evmos/ethermint/encoding"
-	evmosApp "github.com/evmos/evmos/v8/app"
+	evmosApp "github.com/evmos/evmos/v9/app"
 )
 
 var (

@@ -10,13 +10,10 @@ RUN apt-get install git -y
 
 RUN git clone --depth 1 --branch $PRE_UPGRADE_VERSION https://github.com/evmos/evmos.git
 
-RUN mkdir /go/evmos/tests
-
-COPY tests /go/evmos/tests
-
 WORKDIR /go/evmos/
 
-RUN GO111MODULE=on go build -o ./build/chain_init ./tests/e2e/chain_init
+RUN GO111MODULE=on go build -mod=vendor -o ./build/chain_init ./tests/e2e/chain_init
+
 
 ## Deploy image
 FROM ubuntu

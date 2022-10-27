@@ -15,7 +15,7 @@ type internalChain struct {
 	validators []*internalValidator
 }
 
-func new(id, dataDir string) *internalChain {
+func newChain(id, dataDir string) *internalChain {
 	chainMeta := Meta{
 		ID:      id,
 		DataDir: dataDir,

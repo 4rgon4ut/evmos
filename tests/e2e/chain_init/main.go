@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/evmos/evmos/v8/tests/e2e/chain"
+	"github.com/evmos/evmos/v9/tests/e2e/chain"
 )
 
 func main() {

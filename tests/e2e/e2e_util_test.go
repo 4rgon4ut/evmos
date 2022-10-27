@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ory/dockertest/v3/docker"
 
-	"github.com/evmos/evmos/v8/tests/e2e/chain"
+	"github.com/evmos/evmos/v9/tests/e2e/chain"
 )
 
 func (s *IntegrationTestSuite) connectIBCChains() {

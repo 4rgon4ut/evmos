@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/evmos/evmos/v8/tests/e2e/util"
+	"github.com/evmos/evmos/v9/tests/e2e/util"
 )
 
 func (s *IntegrationTestSuite) TestUpgrade() {

@@ -25,9 +25,9 @@ import (
 	"github.com/tendermint/tendermint/privval"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	evmosApp "github.com/evmos/evmos/v8/app"
-	evmoskr "github.com/evmos/evmos/v8/crypto/keyring"
-	"github.com/evmos/evmos/v8/tests/e2e/util"
+	evmosApp "github.com/evmos/evmos/v9/app"
+	evmoskr "github.com/evmos/evmos/v9/crypto/keyring"
+	"github.com/evmos/evmos/v9/tests/e2e/util"
 )
 
 type internalValidator struct {
