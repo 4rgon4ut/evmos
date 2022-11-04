@@ -21,6 +21,12 @@ PROJECT := evmos
 DOCKER_IMAGE := $(NAMESPACE)/$(PROJECT)
 COMMIT_HASH := $(shell git rev-parse --short=7 HEAD)
 DOCKER_TAG := $(COMMIT_HASH)
+# e2e env
+INITIAL_VERSION := $(shell git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+TARGET_VERSION := $(shell git describe --abbrev=0 --tags `git rev-list --tags --max-count=1`)
+MOUNT_PATH := $(shell pwd)/build/:/root/
+E2E_SKIP_CLEANUP := false
+MIGRATE_GENESIS := false
 
 export GO111MODULE = on
 
@@ -169,6 +175,16 @@ clean:
 all: build
 
 build-all: tools build lint test
+
+docker-build-local:
+	@docker build -t evmos:local -f Dockerfile .
+
+docker-build-e2e-init:
+	@docker build \
+	-t evmos:$(INITIAL_VERSION) \
+	--build-arg INITIAL_VERSION=$(INITIAL_VERSION) \
+	-f tests/e2e/upgrade/Dockerfile.init .
+
 
 .PHONY: distclean clean build-all
 
@@ -338,6 +354,14 @@ $(TEST_TARGETS): run-tests
 
 test-unit-cover: ARGS=-timeout=10m -race -coverprofile=coverage.txt -covermode=atomic
 test-unit-cover: TEST_PACKAGES=$(PACKAGES_UNIT)
+
+test-e2e: docker-build-e2e-init docker-build-local
+	mkdir -p ./build
+	rm -rf build/.evmosd
+	INITIAL_VERSION=$(INITIAL_VERSION) TARGET_VERSION=$(TARGET_VERSION) \
+	MIGRATE_GENESIS=$(MIGRATE_GENESIS) E2E_SKIP_CLEANUP=$(E2E_SKIP_CLEANUP) \
+	MOUNT_PATH=$(MOUNT_PATH) go test -v ./tests/e2e/...
+
 
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
