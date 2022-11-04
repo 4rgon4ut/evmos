@@ -83,8 +83,9 @@ make test-e2e INITIAL_VERSION=<version> TARGET_VERSION=<version>
 
 Running the e2e test make script will output the test results for each testing file. In case of a successful upgrade, the script will print the following output (example):
 
-```shell
+```log
 ok  	github.com/evmos/evmos/v9/tests/e2e	174.137s.
+```
 
 To get containers logs run:
 
